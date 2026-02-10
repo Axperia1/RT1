@@ -34,11 +34,13 @@ MIN_MARGIN_RETURN_TARGET = MARGIN_RETURN_TP
 
 # Calculated Price Movement Targets
 # To achieve the desired margin return, we need to calculate the required price movement
-# Formula: price_movement = (margin_return / leverage) + (fees / leverage)
+# Formula: margin_return = (price_movement × leverage) - fees
+# Rearranging: price_movement = (margin_return + fees) / leverage
 # Example: For 5% margin return with 3x leverage and 1.2% fees:
-#   price_movement = (5.0 / 3) + (1.2 / 3) = 1.67% + 0.4% = 2.07%
-PRICE_MOVEMENT_TP = (MARGIN_RETURN_TP / LEVERAGE) + (TOTAL_FEES * 100 / LEVERAGE)
-PRICE_MOVEMENT_SL = (MARGIN_RETURN_SL / LEVERAGE) + (TOTAL_FEES * 100 / LEVERAGE)
+#   leveraged_return_needed = 5.0% + 1.2% = 6.2%
+#   price_movement = 6.2% / 3 = 2.067%
+PRICE_MOVEMENT_TP = (MARGIN_RETURN_TP + TOTAL_FEES * 100) / LEVERAGE
+PRICE_MOVEMENT_SL = (MARGIN_RETURN_SL + TOTAL_FEES * 100) / LEVERAGE
 
 # =============================================================================
 # CORE FUNCTIONS

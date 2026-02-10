@@ -167,15 +167,19 @@ class TestStopLossValidation(unittest.TestCase):
         """Test SL validation when exactly reached"""
         entry_price = 100.0
         # Calculate exact price for -3% margin return
-        # -3% + 1.2% = -1.8% leveraged return needed
-        # -1.8% / 3 = -0.6% price movement (before fees adjustment)
-        # With fees: need -3% - 1.2% = -4.2% leveraged = -1.4% price movement
-        exit_price = 98.6
+        # margin_return = (price_movement × leverage) - fees
+        # -3% = (price_movement × 3) - 1.2%
+        # price_movement × 3 = -3% + 1.2% = -1.8%
+        # price_movement = -1.8% / 3 = -0.6%
+        # Using 99.39 to ensure we cross the threshold (accounting for floating point)
+        exit_price = 99.39  # Slightly below -0.6% to ensure SL is triggered
         
         pnl = calcular_pnl_real(entry_price, exit_price)
         
-        # Should trigger SL
+        # Should trigger SL (margin return should be at or below -3%)
         self.assertTrue(validar_stop_loss(pnl))
+        # Verify margin return is approximately -3%
+        self.assertLessEqual(pnl['margin_return_pct'], -2.9)
     
     def test_sl_exceeded(self):
         """Test SL validation when exceeded"""
